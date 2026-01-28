@@ -79,6 +79,8 @@ export function LiveAvatarChat({
     sessionId: string;
     sessionToken: string;
   } | null>(null);
+  const speakingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const SPEAKING_TIMEOUT_MS = 12000;
 
   const handleTrackSubscribed = useCallback(
     (
@@ -215,9 +217,24 @@ export function LiveAvatarChat({
             roomRef.current.localParticipant.setMicrophoneEnabled(false);
             setIsMuted(true);
           }
+          if (speakingTimeoutRef.current) {
+            clearTimeout(speakingTimeoutRef.current);
+          }
+          speakingTimeoutRef.current = setTimeout(() => {
+            console.log("Fallback timeout - avatar speaking too long, enabling mic");
+            setIsAvatarSpeaking(false);
+            if (roomRef.current) {
+              roomRef.current.localParticipant.setMicrophoneEnabled(true);
+              setIsMuted(false);
+            }
+          }, SPEAKING_TIMEOUT_MS);
         } 
         else if (data.type === "avatar_stop_talking" || data.type === "agent_stop_talking") {
           console.log("Avatar stopped talking - unmuting user");
+          if (speakingTimeoutRef.current) {
+            clearTimeout(speakingTimeoutRef.current);
+            speakingTimeoutRef.current = null;
+          }
           setIsAvatarSpeaking(false);
           if (roomRef.current) {
             roomRef.current.localParticipant.setMicrophoneEnabled(true);
@@ -240,22 +257,31 @@ export function LiveAvatarChat({
         (speaker) => speaker.identity !== localIdentity
       );
       
-      console.log("Active speakers changed, avatar speaking:", avatarIsSpeaking);
+      console.log("Active speakers changed, local:", localIdentity, "avatar speaking:", avatarIsSpeaking);
       
       setIsAvatarSpeaking((prevSpeaking) => {
         if (avatarIsSpeaking && !prevSpeaking) {
           console.log("Avatar started speaking (via ActiveSpeakers) - muting user mic");
-          if (roomRef.current) {
-            roomRef.current.localParticipant.setMicrophoneEnabled(false);
-            setIsMuted(true);
+          roomRef.current?.localParticipant.setMicrophoneEnabled(false);
+          setIsMuted(true);
+          if (speakingTimeoutRef.current) {
+            clearTimeout(speakingTimeoutRef.current);
           }
+          speakingTimeoutRef.current = setTimeout(() => {
+            console.log("Fallback timeout (ActiveSpeakers) - enabling mic");
+            setIsAvatarSpeaking(false);
+            roomRef.current?.localParticipant.setMicrophoneEnabled(true);
+            setIsMuted(false);
+          }, SPEAKING_TIMEOUT_MS);
           return true;
         } else if (!avatarIsSpeaking && prevSpeaking) {
           console.log("Avatar stopped speaking (via ActiveSpeakers) - unmuting user mic");
-          if (roomRef.current) {
-            roomRef.current.localParticipant.setMicrophoneEnabled(true);
-            setIsMuted(false);
+          if (speakingTimeoutRef.current) {
+            clearTimeout(speakingTimeoutRef.current);
+            speakingTimeoutRef.current = null;
           }
+          roomRef.current?.localParticipant.setMicrophoneEnabled(true);
+          setIsMuted(false);
           return false;
         }
         return prevSpeaking;
@@ -427,17 +453,19 @@ export function LiveAvatarChat({
   }, []);
 
   const toggleMute = useCallback(async () => {
-    if (isAvatarSpeaking) {
-      console.log("Cannot toggle mute while avatar is speaking");
-      return;
-    }
-    
     if (roomRef.current) {
       const newMuteState = !isMuted;
       await roomRef.current.localParticipant.setMicrophoneEnabled(!newMuteState);
       setIsMuted(newMuteState);
+      if (!newMuteState) {
+        setIsAvatarSpeaking(false);
+        if (speakingTimeoutRef.current) {
+          clearTimeout(speakingTimeoutRef.current);
+          speakingTimeoutRef.current = null;
+        }
+      }
     }
-  }, [isMuted, isAvatarSpeaking]);
+  }, [isMuted]);
 
   const handleClose = useCallback(() => {
     stopSession(false);
@@ -446,6 +474,10 @@ export function LiveAvatarChat({
 
   useEffect(() => {
     return () => {
+      if (speakingTimeoutRef.current) {
+        clearTimeout(speakingTimeoutRef.current);
+        speakingTimeoutRef.current = null;
+      }
       if (roomRef.current) {
         roomRef.current.disconnect();
         roomRef.current = null;
