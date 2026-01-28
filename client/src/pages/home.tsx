@@ -1,61 +1,176 @@
+import { useState, useRef, useEffect } from "react";
 import { MobileContainer } from "@/components/layout/mobile-container";
-import { DialogNav } from "@/components/dialog-nav";
+import { motion, AnimatePresence } from "framer-motion";
+import { Send, ArrowLeft, Mic, Sparkles } from "lucide-react";
+import { Link, useLocation } from "wouter";
 import { TypingEffect } from "@/components/ui/typing-effect";
-import { motion } from "framer-motion";
 import AvatarImage from "@/assets/agent-avatar.png";
 
+type Message = {
+  id: string;
+  role: 'agent' | 'user';
+  content: string;
+  isTyping?: boolean;
+};
+
+const INITIAL_MESSAGES: Message[] = [
+  { 
+    id: '1', 
+    role: 'agent', 
+    content: "Добрый день. Я — ваш новый лучший сотрудник." 
+  },
+  {
+    id: '2',
+    role: 'agent',
+    content: "Я встречаю клиентов, провожу презентации и закрываю сделки. Работаю 24/7. Без выгорания."
+  }
+];
+
 export default function Home() {
+  const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
+  const [inputValue, setInputValue] = useState("");
+  const [isAgentTyping, setIsAgentTyping] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [location, setLocation] = useLocation();
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages, isAgentTyping]);
+
+  const handleSend = () => {
+    if (!inputValue.trim()) return;
+
+    const userMsg: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: inputValue
+    };
+
+    setMessages(prev => [...prev, userMsg]);
+    setInputValue("");
+    setIsAgentTyping(true);
+
+    // Simulate Agent Response Logic
+    setTimeout(() => {
+      const responseContent = getAgentResponse(messages.length);
+      const agentMsg: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'agent',
+        content: responseContent
+      };
+      setMessages(prev => [...prev, agentMsg]);
+      setIsAgentTyping(false);
+    }, 1500);
+  };
+
+  const getAgentResponse = (count: number) => {
+    // Simple mock logic for demo purposes
+    if (count < 3) return "Понимаю. Именно здесь я и помогаю. Я мгновенно реагирую на каждый лид, чтобы вы не теряли клиентов из-за «тишины».";
+    if (count < 5) return "В отличие от кнопочного чат-бота, я поддерживаю живой диалог. Я понимаю контекст, отрабатываю возражения и веду к продаже.";
+    return "Хотите посмотреть, как мы можем запустить это для вашего бизнеса всего за 72 часа?";
+  };
+
   return (
-    <MobileContainer className="relative flex flex-col">
-      <main className="flex-1 flex flex-col p-6 z-10 overflow-y-auto no-scrollbar justify-center">
-        {/* Avatar Section */}
-        {/* <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8 }}
-          className="w-full flex justify-center mt-8 mb-12"
-        >
-          <div className="relative w-24 h-24">
-             // Hidden avatar for cleaner "Copilot" look as per screenshot, 
-             // but keeping the structure if user wants it back later.
-             // Or we can use a very subtle logo.
-          </div>
-        </motion.div> */}
+    <MobileContainer className="flex flex-col h-screen bg-[#FDFCFB] relative">
+      {/* Header */}
+      <header className="p-4 flex items-center justify-between z-20 shrink-0 bg-white/50 backdrop-blur-md sticky top-0">
+        <div className="flex items-center gap-3">
+             {/* Removed back button as this is home */}
+            <h3 className="font-display font-semibold text-gray-900 text-lg tracking-tight">Wow Agent</h3>
+        </div>
+        
+        <Link href="/presentation">
+          <button className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm border border-black/5 hover:bg-gray-50 transition-all active:scale-95 group">
+             <Sparkles size={16} className="text-gray-400 group-hover:text-amber-500 transition-colors" />
+             <span className="text-xs font-bold text-gray-600 uppercase tracking-wide">Как это работает</span>
+          </button>
+        </Link>
+      </header>
 
-        {/* Dialog Header */}
-        <div className="space-y-6 text-center mb-12 mt-20">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="inline-block px-4 py-2 rounded-full bg-white/40 border border-white/50 text-xs font-semibold text-gray-500 tracking-wider uppercase shadow-sm"
+      {/* Chat Area */}
+      <div 
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto p-4 space-y-6 no-scrollbar pb-24"
+      >
+        <div className="flex justify-center mb-8 mt-4">
+             <div className="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-bold uppercase rounded-full tracking-wider border border-green-200 shadow-sm">
+                Online • 24/7
+            </div>
+        </div>
+
+        <AnimatePresence>
+          {messages.map((msg) => (
+            <motion.div
+              key={msg.id}
+              initial={{ opacity: 0, y: 10, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+            >
+              <div 
+                className={`
+                  max-w-[85%] px-5 py-3.5 rounded-2xl text-[15px] leading-relaxed shadow-sm
+                  ${msg.role === 'user' 
+                    ? 'bg-black text-white rounded-br-none shadow-md' 
+                    : 'bg-white text-gray-800 rounded-bl-none shadow-sm border border-black/5'}
+                `}
+              >
+                {msg.role === 'agent' ? (
+                  <TypingEffect text={msg.content} speed={15} />
+                ) : (
+                  msg.content
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+        
+        {isAgentTyping && (
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }}
+            className="flex justify-start"
           >
-            Wow Agent
+            <div className="bg-white px-4 py-3 rounded-2xl rounded-bl-none flex gap-1 items-center shadow-sm border border-black/5">
+              <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+              <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+              <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></span>
+            </div>
           </motion.div>
-          
-          <h1 className="text-4xl font-display font-medium text-gray-900 leading-tight">
-            <TypingEffect text="Добрый день. Я — ваш новый лучший сотрудник." speed={40} />
-          </h1>
-        </div>
+        )}
+      </div>
 
-        {/* Agent Message */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.5, duration: 0.8 }}
-          className="text-center max-w-[90%] mx-auto mb-12"
+      {/* Input Area (Copilot Style) */}
+      <div className="p-4 pt-2 shrink-0 z-20 w-full absolute bottom-4 left-0">
+        <form 
+          onSubmit={(e) => { e.preventDefault(); handleSend(); }}
+          className="mx-4 relative flex items-center shadow-xl shadow-black/5 rounded-[2rem] bg-white border border-black/5 transition-all focus-within:shadow-2xl focus-within:scale-[1.01]"
         >
-          <p className="text-gray-500 text-lg leading-relaxed font-light">
-            Я встречаю клиентов, провожу презентации и закрываю сделки. 
-            <span className="text-gray-900 font-medium block mt-2">Работаю 24/7. Без выгорания.</span>
-          </p>
-        </motion.div>
-
-        {/* Navigation / Choices */}
-        <div className="mt-auto">
-          <DialogNav />
-        </div>
-      </main>
+          <button 
+            type="button"
+            className="p-4 text-gray-400 hover:text-gray-600 transition-colors"
+          >
+             <Mic size={22} />
+          </button>
+          
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            placeholder="Сообщение для Wow Agent..."
+            className="flex-1 bg-transparent border-none py-4 text-gray-900 text-[16px] placeholder:text-gray-400 focus:outline-none focus:ring-0"
+          />
+          
+          <button 
+            type="submit"
+            disabled={!inputValue.trim()}
+            className="p-2 mr-2 bg-black rounded-full text-white hover:bg-black/80 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            <Send size={18} />
+          </button>
+        </form>
+      </div>
     </MobileContainer>
   );
 }

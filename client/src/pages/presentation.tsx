@@ -175,6 +175,10 @@ export default function PresentationPage() {
   const searchParams = new URLSearchParams(window.location.search);
   const requestedSlide = searchParams.get('slide');
 
+  // Logic: if user clicks "How it works" on Home, they land here.
+  // We don't have different "buttons" leading to different slides anymore, just one button.
+  // So standard start at 0 is correct.
+
   useEffect(() => {
     if (requestedSlide) {
       const index = SLIDES.findIndex(s => s.id === requestedSlide);
@@ -193,6 +197,8 @@ export default function PresentationPage() {
   const prevSlide = () => {
     if (currentSlideIndex > 0) {
       setCurrentSlideIndex(prev => prev - 1);
+    } else {
+      setLocation('/');
     }
   };
 
@@ -202,11 +208,12 @@ export default function PresentationPage() {
     <MobileContainer className="flex flex-col h-screen overflow-hidden">
       {/* Header */}
       <header className="p-6 flex items-center justify-between z-20">
-        <Link href="/">
-          <button className="p-2 -ml-2 rounded-full hover:bg-black/5 text-gray-500 transition-colors">
-            <X size={24} />
-          </button>
-        </Link>
+        <button 
+          onClick={() => setLocation('/')}
+          className="p-2 -ml-2 rounded-full hover:bg-black/5 text-gray-500 transition-colors"
+        >
+          <X size={24} />
+        </button>
         <div className="flex gap-1.5">
           {SLIDES.map((_, i) => (
             <div 
@@ -252,10 +259,9 @@ export default function PresentationPage() {
       <div className="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-white via-white/90 to-transparent z-20 flex justify-between items-center">
         <button 
           onClick={prevSlide}
-          disabled={currentSlideIndex === 0}
-          className="text-gray-400 hover:text-gray-800 disabled:opacity-0 transition-colors flex items-center gap-2 text-sm font-medium"
+          className="text-gray-400 hover:text-gray-800 transition-colors flex items-center gap-2 text-sm font-medium"
         >
-          <ArrowLeft size={18} /> Назад
+          <ArrowLeft size={18} /> {currentSlideIndex === 0 ? "Главная" : "Назад"}
         </button>
 
         <button 
