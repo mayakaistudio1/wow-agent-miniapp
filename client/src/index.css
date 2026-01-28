@@ -40,41 +40,41 @@
   --font-sans: 'Plus Jakarta Sans', sans-serif;
   --font-display: 'Outfit', sans-serif;
   
-  --radius: 0.75rem;
+  --radius: 1.5rem;
 }
 
-/* Dark Future / Premium AI Theme */
+/* Light / Warm Premium Theme */
 :root {
-  /* Dark by default for this app */
-  --background: 224 71% 4%; /* Deepest Blue/Black */
-  --foreground: 210 40% 98%; /* White/Off-white */
+  /* Warm Beige/Cream Background */
+  --background: 30 14% 97%; /* #F9F7F5 */
+  --foreground: 0 0% 10%;   /* #1A1A1A */
 
-  --card: 224 71% 6%; /* Slightly lighter deep blue */
-  --card-foreground: 210 40% 98%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 10%;
 
-  --popover: 224 71% 6%;
-  --popover-foreground: 210 40% 98%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 10%;
 
-  --primary: 252 100% 68%; /* Electric Purple/Blue */
-  --primary-foreground: 210 40% 98%;
+  --primary: 0 0% 10%; /* Soft Black */
+  --primary-foreground: 0 0% 98%;
 
-  --secondary: 217 33% 17%; /* Dark muted blue */
-  --secondary-foreground: 210 40% 98%;
+  --secondary: 30 10% 92%; /* Slightly darker beige */
+  --secondary-foreground: 0 0% 10%;
 
-  --muted: 217 33% 12%;
-  --muted-foreground: 215 20% 65%;
+  --muted: 30 10% 90%;
+  --muted-foreground: 0 0% 40%;
 
-  --accent: 190 100% 50%; /* Cyan accent for "digital" feel */
-  --accent-foreground: 224 71% 4%;
+  --accent: 25 100% 92%; /* Soft peach accent for highlights */
+  --accent-foreground: 0 0% 10%;
 
-  --destructive: 0 62% 30%;
-  --destructive-foreground: 210 40% 98%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
 
-  --border: 217 33% 15%;
-  --input: 217 33% 15%;
-  --ring: 252 100% 68%;
+  --border: 30 10% 85%;
+  --input: 30 10% 85%;
+  --ring: 0 0% 10%;
   
-  --radius: 1rem;
+  --radius: 1.5rem;
 }
 
 @layer base {
@@ -82,10 +82,11 @@
     @apply border-border;
   }
   body {
-    @apply font-sans antialiased bg-background text-foreground selection:bg-primary/20;
-    background-image: url('/src/assets/bg-texture.png');
-    background-size: cover;
-    background-position: center;
+    @apply font-sans antialiased bg-background text-foreground selection:bg-black/10;
+    /* Soft gradient mesh background */
+    background: radial-gradient(circle at 50% 30%, rgba(255, 220, 200, 0.4) 0%, rgba(255, 255, 255, 0) 50%),
+                radial-gradient(circle at 10% 80%, rgba(230, 230, 250, 0.4) 0%, rgba(255, 255, 255, 0) 40%),
+                hsl(30, 14%, 97%);
     background-attachment: fixed;
   }
   
@@ -96,17 +97,13 @@
 
 @layer utilities {
   .glass-panel {
-    @apply bg-black/40 backdrop-blur-xl border border-white/10 shadow-2xl;
+    @apply bg-white/60 backdrop-blur-xl border border-white/40 shadow-xl shadow-black/5;
   }
   
-  .text-glow {
-    text-shadow: 0 0 20px hsla(var(--primary), 0.5);
+  .glass-panel-dark {
+     @apply bg-black/5 backdrop-blur-lg border border-black/5;
   }
   
-  .neon-border {
-    box-shadow: 0 0 10px hsla(var(--primary), 0.2), inset 0 0 10px hsla(var(--primary), 0.1);
-  }
-
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
@@ -117,15 +114,10 @@
   }
   
   .fade-in-up {
-    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     opacity: 0;
     transform: translateY(20px);
   }
-  
-  .delay-100 { animation-delay: 100ms; }
-  .delay-200 { animation-delay: 200ms; }
-  .delay-300 { animation-delay: 300ms; }
-  .delay-500 { animation-delay: 500ms; }
 
   @keyframes fadeInUp {
     to {

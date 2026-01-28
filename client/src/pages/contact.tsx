@@ -18,89 +18,93 @@ export default function ContactPage() {
 
   return (
     <MobileContainer className="flex flex-col h-screen">
-       {/* Background Gradient Spotlights */}
-       <div className="absolute top-[-20%] right-[-20%] w-[80%] h-[50%] bg-primary/20 blur-[100px] rounded-full pointer-events-none" />
-
       <header className="p-4 z-20">
         <Link href="/">
-          <button className="p-2 rounded-full hover:bg-white/10 text-white/70 transition-colors">
-            <ArrowLeft size={20} />
+          <button className="p-2 rounded-full hover:bg-black/5 text-gray-500 transition-colors">
+            <ArrowLeft size={24} />
           </button>
         </Link>
       </header>
 
       <div className="flex-1 p-6 flex flex-col z-10 overflow-y-auto no-scrollbar">
-        <div className="text-center mb-8">
-          <div className="w-20 h-20 mx-auto rounded-full overflow-hidden border-2 border-primary shadow-[0_0_30px_rgba(var(--primary),0.3)] mb-4">
+        <div className="text-center mb-10 mt-4">
+          {/* <div className="w-20 h-20 mx-auto rounded-full overflow-hidden border border-black/10 shadow-xl mb-6">
              <img src={AvatarImage} alt="Agent" className="w-full h-full object-cover" />
-          </div>
-          <h1 className="text-3xl font-display font-bold text-white mb-2">Ready to Launch?</h1>
-          <p className="text-white/60 text-sm">Create your own Digital Employee in 72 hours.</p>
+          </div> */}
+          <h1 className="text-3xl font-display font-bold text-gray-900 mb-3">Готовы к запуску?</h1>
+          <p className="text-gray-500 text-base">Создайте своего цифрового сотрудника за 72 часа.</p>
         </div>
 
         {formState === 'success' ? (
            <motion.div 
              initial={{ opacity: 0, scale: 0.9 }}
              animate={{ opacity: 1, scale: 1 }}
-             className="glass-panel p-8 rounded-2xl text-center flex flex-col items-center justify-center flex-1"
+             className="bg-white border border-black/5 shadow-xl p-8 rounded-3xl text-center flex flex-col items-center justify-center flex-1 mb-8"
            >
-             <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center text-green-400 mb-4">
+             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-6">
                <Check size={32} />
              </div>
-             <h3 className="text-xl font-bold text-white mb-2">Request Sent!</h3>
-             <p className="text-white/60 text-sm mb-6">Our team will contact you shortly to schedule your briefing.</p>
+             <h3 className="text-xl font-bold text-gray-900 mb-3">Заявка отправлена!</h3>
+             <p className="text-gray-500 text-sm mb-8">Наша команда свяжется с вами в ближайшее время для брифинга.</p>
              <Link href="/">
-               <button className="text-primary text-sm font-medium hover:underline">Back to Agent</button>
+               <button className="text-black font-semibold text-sm hover:underline">Вернуться к агенту</button>
              </Link>
            </motion.div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <label className="text-xs font-medium text-white/60 ml-1">Name</label>
+              <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">Имя</label>
               <input 
                 required
                 type="text" 
-                placeholder="John Doe"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                placeholder="Иван Иванов"
+                className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-4 text-gray-900 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all placeholder:text-gray-300"
               />
             </div>
             
             <div className="space-y-2">
-              <label className="text-xs font-medium text-white/60 ml-1">Telegram / Contact</label>
+              <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">Telegram / Контакт</label>
               <input 
                 required
                 type="text" 
                 placeholder="@username"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-4 text-gray-900 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all placeholder:text-gray-300"
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-medium text-white/60 ml-1">Business Goal</label>
-              <select className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all appearance-none">
-                <option className="bg-black text-white">Increase Sales</option>
-                <option className="bg-black text-white">Automate Support</option>
-                <option className="bg-black text-white">Webinar Success</option>
-                <option className="bg-black text-white">Other</option>
-              </select>
+              <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">Бизнес-цель</label>
+              <div className="relative">
+                <select className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-4 text-gray-900 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all appearance-none">
+                    <option>Увеличить продажи</option>
+                    <option>Автоматизировать поддержку</option>
+                    <option>Вебинары и дожим</option>
+                    <option>Другое</option>
+                </select>
+                <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                    <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                </div>
+              </div>
             </div>
 
             <button 
               type="submit"
               disabled={formState === 'submitting'}
-              className="w-full bg-primary text-white font-bold py-4 rounded-xl mt-4 shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+              className="w-full bg-black text-white font-bold py-5 rounded-2xl mt-6 shadow-xl shadow-black/10 hover:scale-[1.02] transition-all active:scale-[0.98] flex items-center justify-center gap-2 text-lg"
             >
               {formState === 'submitting' ? (
-                "Processing..."
+                "Отправка..."
               ) : (
                 <>
-                  <Sparkles size={18} /> Get My Wow Agent
+                  <Sparkles size={20} /> Получить Wow Agent
                 </>
               )}
             </button>
 
-            <p className="text-[10px] text-center text-white/30 mt-4">
-              By clicking above, you agree to transform your business.
+            <p className="text-[11px] text-center text-gray-400 mt-4 px-8 leading-tight">
+              Нажимая кнопку, вы соглашаетесь трансформировать свой бизнес.
             </p>
           </form>
         )}

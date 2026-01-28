@@ -12,10 +12,10 @@ import {
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
-  { id: 'chat', label: 'Start Live Dialog', icon: MessageSquare, path: '/chat', color: 'text-blue-400' },
-  { id: 'presentation', label: 'See How It Works', icon: Sparkles, path: '/presentation', color: 'text-purple-400' },
-  { id: 'benefits', label: 'Why You Need This', icon: Zap, path: '/presentation?slide=benefits', color: 'text-yellow-400' },
-  { id: 'launch', label: 'Launch in 72h', icon: Rocket, path: '/presentation?slide=launch', color: 'text-green-400' },
+  { id: 'chat', label: 'Начать живой диалог', icon: MessageSquare, path: '/chat', color: 'text-gray-800' },
+  { id: 'presentation', label: 'Как это работает', icon: Sparkles, path: '/presentation', color: 'text-gray-800' },
+  { id: 'benefits', label: 'Зачем вам это', icon: Zap, path: '/presentation?slide=benefits', color: 'text-gray-800' },
+  { id: 'launch', label: 'Запуск за 72ч', icon: Rocket, path: '/presentation?slide=launch', color: 'text-gray-800' },
 ];
 
 export function DialogNav() {
@@ -32,14 +32,14 @@ export function DialogNav() {
             transition={{ delay: index * 0.1 + 0.5 }}
             className="group cursor-pointer"
           >
-            <div className="glass-panel p-4 rounded-2xl flex items-center justify-between hover:bg-white/5 transition-all active:scale-[0.98]">
+            <div className="glass-panel p-4 rounded-2xl flex items-center justify-between hover:bg-white/80 transition-all active:scale-[0.98]">
               <div className="flex items-center gap-4">
-                <div className={cn("p-2 rounded-full bg-white/5 group-hover:bg-white/10 transition-colors", item.color)}>
+                <div className={cn("p-2 rounded-full bg-black/5 group-hover:bg-black/10 transition-colors", item.color)}>
                   <item.icon size={20} />
                 </div>
-                <span className="font-medium text-white/90">{item.label}</span>
+                <span className="font-medium text-gray-900">{item.label}</span>
               </div>
-              <ChevronRight className="text-white/20 group-hover:text-white/60 transition-colors" size={18} />
+              <ChevronRight className="text-black/20 group-hover:text-black/60 transition-colors" size={18} />
             </div>
           </motion.div>
         </Link>
