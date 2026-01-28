@@ -1,4 +1,37 @@
 import type { Express, Request, Response } from "express";
+import { z } from "zod";
+
+const tokenRequestSchema = z.object({
+  language: z.string().default("ru"),
+  context: z.string().optional(),
+});
+
+const startRequestSchema = z.object({
+  session_token: z.string().min(1, "session_token is required"),
+});
+
+const stopRequestSchema = z.object({
+  session_id: z.string().min(1, "session_id is required"),
+  session_token: z.string().min(1, "session_token is required"),
+});
+
+const eventRequestSchema = z.object({
+  session_token: z.string().min(1, "session_token is required"),
+  event_type: z.string().min(1, "event_type is required"),
+  data: z.any().optional(),
+});
+
+const transcriptParamsSchema = z.object({
+  sessionId: z.string().min(1, "sessionId is required"),
+});
+
+const endSessionParamsSchema = z.object({
+  id: z.string().min(1, "session id is required"),
+});
+
+const endSessionBodySchema = z.object({
+  session_token: z.string().optional(),
+});
 
 const LIVEAVATAR_API_KEY = process.env.LIVEAVATAR_API_KEY;
 const LIVEAVATAR_AVATAR_ID = process.env.LIVEAVATAR_AVATAR_ID || "9650a758-1085-4d49-8bf3-f347565ec229";
@@ -127,10 +160,13 @@ export async function sendEvent(sessionToken: string, eventType: string, data?: 
 export function registerLiveAvatarRoutes(app: Express): void {
   app.post("/api/liveavatar/token", async (req: Request, res: Response) => {
     try {
-      const { language = "ru" } = req.body || {};
-      const result = await getSessionToken(language);
+      const validatedData = tokenRequestSchema.parse(req.body || {});
+      const result = await getSessionToken(validatedData.language);
       res.status(200).json(result);
     } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid request data", details: error.errors });
+      }
       console.error("Token generation error:", error);
       res.status(500).json({
         error: "Token generation failed",
@@ -141,13 +177,13 @@ export function registerLiveAvatarRoutes(app: Express): void {
 
   app.post("/api/liveavatar/start", async (req: Request, res: Response) => {
     try {
-      const { session_token } = req.body || {};
-      if (!session_token) {
-        return res.status(400).json({ error: "Missing session_token" });
-      }
-      const result = await startSession(session_token);
+      const validatedData = startRequestSchema.parse(req.body || {});
+      const result = await startSession(validatedData.session_token);
       res.status(200).json(result);
     } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid request data", details: error.errors });
+      }
       console.error("Start session error:", error);
       res.status(500).json({
         error: "Session start failed",
@@ -158,16 +194,13 @@ export function registerLiveAvatarRoutes(app: Express): void {
 
   app.post("/api/liveavatar/stop", async (req: Request, res: Response) => {
     try {
-      const { session_id, session_token } = req.body || {};
-      if (!session_id) {
-        return res.status(400).json({ error: "Missing session_id" });
-      }
-      if (!session_token) {
-        return res.status(400).json({ error: "Missing session_token" });
-      }
-      const result = await stopSession(session_id, session_token);
+      const validatedData = stopRequestSchema.parse(req.body || {});
+      const result = await stopSession(validatedData.session_id, validatedData.session_token);
       res.status(200).json(result);
     } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid request data", details: error.errors });
+      }
       console.error("Stop session error:", error);
       res.status(500).json({
         error: "Session stop failed",
@@ -178,16 +211,13 @@ export function registerLiveAvatarRoutes(app: Express): void {
 
   app.post("/api/liveavatar/event", async (req: Request, res: Response) => {
     try {
-      const { session_token, event_type, data } = req.body || {};
-      if (!session_token) {
-        return res.status(400).json({ error: "Missing session_token" });
-      }
-      if (!event_type) {
-        return res.status(400).json({ error: "Missing event_type" });
-      }
-      const result = await sendEvent(session_token, event_type, data);
+      const validatedData = eventRequestSchema.parse(req.body || {});
+      const result = await sendEvent(validatedData.session_token, validatedData.event_type, validatedData.data);
       res.status(200).json(result);
     } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid request data", details: error.errors });
+      }
       console.error("Send event error:", error);
       res.status(500).json({
         error: "Send event failed",
@@ -198,13 +228,13 @@ export function registerLiveAvatarRoutes(app: Express): void {
 
   app.get("/api/liveavatar/transcript/:sessionId", async (req: Request, res: Response) => {
     try {
-      const sessionId = req.params.sessionId as string;
-      if (!sessionId) {
-        return res.status(400).json({ error: "Missing sessionId" });
-      }
-      const result = await getSessionTranscript(sessionId);
+      const validatedParams = transcriptParamsSchema.parse(req.params);
+      const result = await getSessionTranscript(validatedParams.sessionId);
       res.status(200).json(result);
     } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid request data", details: error.errors });
+      }
       console.error("Get transcript error:", error);
       res.status(500).json({
         error: "Get transcript failed",
@@ -215,13 +245,13 @@ export function registerLiveAvatarRoutes(app: Express): void {
 
   app.post("/api/liveavatar/sessions/:id/end", async (req: Request, res: Response) => {
     try {
-      const sessionId = req.params.id as string;
-      const { session_token } = req.body || {};
+      const validatedParams = endSessionParamsSchema.parse(req.params);
+      const validatedBody = endSessionBodySchema.parse(req.body || {});
       
       let transcript = null;
-      if (session_token) {
+      if (validatedBody.session_token) {
         try {
-          transcript = await getSessionTranscript(sessionId);
+          transcript = await getSessionTranscript(validatedParams.id);
         } catch (e) {
           console.error("Failed to get transcript:", e);
         }
@@ -229,6 +259,9 @@ export function registerLiveAvatarRoutes(app: Express): void {
 
       res.status(200).json({ ok: true, transcript });
     } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid request data", details: error.errors });
+      }
       console.error("End session error:", error);
       res.status(500).json({
         error: "End session failed",

@@ -488,8 +488,8 @@ export function LiveAvatarChat({
               <span className="text-white font-bold text-sm">{config.avatarInitials}</span>
             </div>
             <div>
-              <h3 className="text-white font-semibold">{config.avatarName}</h3>
-              <p className="text-white/60 text-xs">
+              <h3 className="text-white font-semibold" data-testid="text-avatar-name">{config.avatarName}</h3>
+              <p className="text-white/60 text-xs" data-testid="text-session-status">
                 {sessionState === "connected" ? "В сети" : 
                  sessionState === "connecting" ? config.connectingText :
                  sessionState === "waiting_avatar" ? config.waitingText :
@@ -521,10 +521,10 @@ export function LiveAvatarChat({
               )}>
                 <Video className="w-12 h-12 text-white" />
               </div>
-              <h2 className="text-white text-xl font-semibold mb-2">
+              <h2 className="text-white text-xl font-semibold mb-2" data-testid="text-idle-title">
                 Видеозвонок с {config.avatarName}
               </h2>
-              <p className="text-white/60 text-sm mb-6 max-w-xs mx-auto">
+              <p className="text-white/60 text-sm mb-6 max-w-xs mx-auto" data-testid="text-idle-description">
                 Нажмите кнопку ниже, чтобы начать живой разговор с AI-ассистентом
               </p>
               <button
@@ -545,9 +545,9 @@ export function LiveAvatarChat({
               animate={{ scale: 1, opacity: 1 }}
               className="text-center"
             >
-              <Loader2 className="w-16 h-16 text-gray-400 animate-spin mx-auto mb-4" />
-              <p className="text-white text-lg">{config.connectingText}</p>
-              <p className="text-white/60 text-sm mt-2">Пожалуйста, подождите</p>
+              <Loader2 className="w-16 h-16 text-gray-400 animate-spin mx-auto mb-4" data-testid="icon-loading" />
+              <p className="text-white text-lg" data-testid="text-connecting-status">{config.connectingText}</p>
+              <p className="text-white/60 text-sm mt-2" data-testid="text-connecting-description">Пожалуйста, подождите</p>
             </motion.div>
           )}
 
@@ -567,8 +567,8 @@ export function LiveAvatarChat({
                   <Video className="w-8 h-8 text-white" />
                 </div>
               </div>
-              <p className="text-white text-lg">{config.waitingText}</p>
-              <p className="text-white/60 text-sm mt-2">Аватар подключается, это может занять несколько секунд</p>
+              <p className="text-white text-lg" data-testid="text-waiting-status">{config.waitingText}</p>
+              <p className="text-white/60 text-sm mt-2" data-testid="text-waiting-description">Аватар подключается, это может занять несколько секунд</p>
             </motion.div>
           )}
 
@@ -582,8 +582,8 @@ export function LiveAvatarChat({
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-500/20 flex items-center justify-center">
                 <VideoOff className="w-8 h-8 text-red-500" />
               </div>
-              <p className="text-white text-lg mb-2">Ошибка подключения</p>
-              <p className="text-white/60 text-sm mb-4 max-w-xs mx-auto">{error}</p>
+              <p className="text-white text-lg mb-2" data-testid="text-error-title">Ошибка подключения</p>
+              <p className="text-white/60 text-sm mb-4 max-w-xs mx-auto" data-testid="text-error-message">{error}</p>
               <button
                 onClick={startSession}
                 className="px-6 py-3 bg-white/10 text-white rounded-full hover:bg-white/20 transition-colors"
@@ -630,16 +630,17 @@ export function LiveAvatarChat({
               )}>
                 <Phone className="w-10 h-10 text-white" />
               </div>
-              <h2 className="text-white text-2xl font-semibold mb-2">
+              <h2 className="text-white text-2xl font-semibold mb-2" data-testid="text-ended-title">
                 {config.endedTitle}
               </h2>
-              <p className="text-white/70 text-sm mb-8 max-w-xs mx-auto">
+              <p className="text-white/70 text-sm mb-8 max-w-xs mx-auto" data-testid="text-ended-description">
                 {config.endedDescription}
               </p>
               
               <button
                 onClick={() => setSessionState("idle")}
                 className="px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-full font-semibold hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg"
+                data-testid="button-new-call"
               >
                 Новый звонок
               </button>
@@ -675,7 +676,7 @@ export function LiveAvatarChat({
           >
             {/* Speaking Indicators */}
             {config.showSpeakingIndicator && isAvatarSpeaking && (
-              <div className="text-center mb-4">
+              <div className="text-center mb-4" data-testid="indicator-avatar-speaking">
                 <span className="inline-flex items-center gap-2 px-4 py-2 bg-gray-500/20 text-gray-300 rounded-full text-sm">
                   <span className="w-2 h-2 bg-gray-400 rounded-full animate-pulse" />
                   {config.avatarName} говорит...
@@ -683,7 +684,7 @@ export function LiveAvatarChat({
               </div>
             )}
             {config.showYourTurnIndicator && !isAvatarSpeaking && !isMuted && sessionState === "connected" && (
-              <div className="text-center mb-4">
+              <div className="text-center mb-4" data-testid="indicator-your-turn">
                 <span className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/20 text-green-300 rounded-full text-sm">
                   <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                   Ваша очередь — говорите
