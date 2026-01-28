@@ -3,17 +3,50 @@ import { MobileContainer } from "@/components/layout/mobile-container";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { ArrowLeft, Check, Sparkles } from "lucide-react";
-import AvatarImage from "@/assets/agent-avatar.png";
+import { useMutation } from "@tanstack/react-query";
+import type { InsertLead } from "@shared/schema";
 
 export default function ContactPage() {
-  const [formState, setFormState] = useState<'idle' | 'submitting' | 'success'>('idle');
+  const [formState, setFormState] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [formData, setFormData] = useState({
+    name: "",
+    contact: "",
+    businessGoal: "Увеличить продажи"
+  });
+
+  const submitLead = useMutation({
+    mutationFn: async (data: InsertLead) => {
+      const response = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      
+      if (!response.ok) {
+        throw new Error("Failed to submit");
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      setFormState('success');
+    },
+    onError: (error) => {
+      console.error("Error submitting lead:", error);
+      setFormState('error');
+      setTimeout(() => setFormState('idle'), 3000);
+    }
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setFormState('submitting');
-    setTimeout(() => {
-      setFormState('success');
-    }, 2000);
+    
+    submitLead.mutate({
+      name: formData.name,
+      contact: formData.contact,
+      businessGoal: formData.businessGoal,
+    });
   };
 
   return (
@@ -28,9 +61,6 @@ export default function ContactPage() {
 
       <div className="flex-1 p-6 flex flex-col z-10 overflow-y-auto no-scrollbar">
         <div className="text-center mb-10 mt-4">
-          {/* <div className="w-20 h-20 mx-auto rounded-full overflow-hidden border border-black/10 shadow-xl mb-6">
-             <img src={AvatarImage} alt="Agent" className="w-full h-full object-cover" />
-          </div> */}
           <h1 className="text-3xl font-display font-bold text-gray-900 mb-3">Готовы к запуску?</h1>
           <p className="text-gray-500 text-base">Создайте своего цифрового сотрудника за 72 часа.</p>
         </div>
@@ -57,6 +87,8 @@ export default function ContactPage() {
               <input 
                 required
                 type="text" 
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Иван Иванов"
                 className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-4 text-gray-900 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all placeholder:text-gray-300"
               />
@@ -66,7 +98,9 @@ export default function ContactPage() {
               <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">Telegram / Контакт</label>
               <input 
                 required
-                type="text" 
+                type="text"
+                value={formData.contact}
+                onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
                 placeholder="@username"
                 className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-4 text-gray-900 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all placeholder:text-gray-300"
               />
@@ -75,7 +109,11 @@ export default function ContactPage() {
             <div className="space-y-2">
               <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">Бизнес-цель</label>
               <div className="relative">
-                <select className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-4 text-gray-900 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all appearance-none">
+                <select 
+                  value={formData.businessGoal}
+                  onChange={(e) => setFormData({ ...formData, businessGoal: e.target.value })}
+                  className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-4 text-gray-900 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all appearance-none"
+                >
                     <option>Увеличить продажи</option>
                     <option>Автоматизировать поддержку</option>
                     <option>Вебинары и дожим</option>
@@ -89,10 +127,16 @@ export default function ContactPage() {
               </div>
             </div>
 
+            {formState === 'error' && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-800 text-center">
+                Ошибка отправки. Попробуйте снова.
+              </div>
+            )}
+
             <button 
               type="submit"
               disabled={formState === 'submitting'}
-              className="w-full bg-black text-white font-bold py-5 rounded-2xl mt-6 shadow-xl shadow-black/10 hover:scale-[1.02] transition-all active:scale-[0.98] flex items-center justify-center gap-2 text-lg"
+              className="w-full bg-black text-white font-bold py-5 rounded-2xl mt-6 shadow-xl shadow-black/10 hover:scale-[1.02] transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-lg"
             >
               {formState === 'submitting' ? (
                 "Отправка..."
