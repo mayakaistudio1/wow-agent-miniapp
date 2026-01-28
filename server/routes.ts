@@ -3,11 +3,14 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertLeadSchema } from "@shared/schema";
 import { z } from "zod";
+import { registerLiveAvatarRoutes } from "./liveavatar-routes";
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  // Register LiveAvatar routes for video chat
+  registerLiveAvatarRoutes(app);
   // Lead submission endpoint
   app.post("/api/leads", async (req, res) => {
     try {

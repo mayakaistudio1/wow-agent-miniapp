@@ -46,3 +46,10 @@ waitForPort = 5000
 [agent]
 mockupState = "FULLSTACK"
 integrations = ["javascript_database:1.0.0"]
+
+[userenv]
+
+[userenv.shared]
+LIVEAVATAR_AVATAR_ID = "9650a758-1085-4d49-8bf3-f347565ec229"
+LIVEAVATAR_VOICE_ID = "c23719ef-d070-42ee-9cd9-4b867c621671"
+LIVEAVATAR_CONTEXT_ID = "0af664ad-8b66-4f6e-91ab-3b3245d4d72d"

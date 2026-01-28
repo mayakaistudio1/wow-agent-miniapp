@@ -7,12 +7,14 @@ import {
   Rocket, 
   Zap, 
   User, 
-  ChevronRight 
+  ChevronRight,
+  Video 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
-  { id: 'chat', label: 'Начать живой диалог', icon: MessageSquare, path: '/chat', color: 'text-gray-800' },
+  { id: 'video-chat', label: 'Видео-звонок с агентом', icon: Video, path: '/video-chat', color: 'text-gray-800' },
+  { id: 'chat', label: 'Текстовый диалог', icon: MessageSquare, path: '/chat', color: 'text-gray-800' },
   { id: 'presentation', label: 'Как это работает', icon: Sparkles, path: '/presentation', color: 'text-gray-800' },
 ];
 
