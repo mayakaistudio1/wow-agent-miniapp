@@ -14,8 +14,6 @@ import { cn } from "@/lib/utils";
 const NAV_ITEMS = [
   { id: 'chat', label: 'Начать живой диалог', icon: MessageSquare, path: '/chat', color: 'text-gray-800' },
   { id: 'presentation', label: 'Как это работает', icon: Sparkles, path: '/presentation', color: 'text-gray-800' },
-  { id: 'benefits', label: 'Зачем вам это', icon: Zap, path: '/presentation?slide=benefits', color: 'text-gray-800' },
-  { id: 'launch', label: 'Запуск за 72ч', icon: Rocket, path: '/presentation?slide=launch', color: 'text-gray-800' },
 ];
 
 export function DialogNav() {
