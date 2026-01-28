@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
+import ChatPage from "@/pages/chat";
 import PresentationPage from "@/pages/presentation";
 import ContactPage from "@/pages/contact";
 
@@ -12,7 +13,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
-      {/* Merged Home and Chat, so /chat is redundant, but keeping as alias just in case or 404ing it */}
+      <Route path="/chat" component={ChatPage} />
       <Route path="/presentation" component={PresentationPage} />
       <Route path="/contact" component={ContactPage} />
       <Route component={NotFound} />
