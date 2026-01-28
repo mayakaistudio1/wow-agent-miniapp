@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { MobileContainer } from "@/components/layout/mobile-container";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, ArrowLeft, Mic, Sparkles } from "lucide-react";
+import { Send, ArrowLeft, Mic, Sparkles, MessageSquare, ChevronRight } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { TypingEffect } from "@/components/ui/typing-effect";
 import AvatarImage from "@/assets/agent-avatar.png";
@@ -31,7 +31,6 @@ export default function Home() {
   const [inputValue, setInputValue] = useState("");
   const [isAgentTyping, setIsAgentTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [location, setLocation] = useLocation();
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -66,7 +65,6 @@ export default function Home() {
   };
 
   const getAgentResponse = (count: number) => {
-    // Simple mock logic for demo purposes
     if (count < 3) return "Понимаю. Именно здесь я и помогаю. Я мгновенно реагирую на каждый лид, чтобы вы не теряли клиентов из-за «тишины».";
     if (count < 5) return "В отличие от кнопочного чат-бота, я поддерживаю живой диалог. Я понимаю контекст, отрабатываю возражения и веду к продаже.";
     return "Хотите посмотреть, как мы можем запустить это для вашего бизнеса всего за 72 часа?";
@@ -74,103 +72,115 @@ export default function Home() {
 
   return (
     <MobileContainer className="flex flex-col h-screen bg-[#FDFCFB] relative">
-      {/* Header */}
-      <header className="p-4 flex items-center justify-between z-20 shrink-0 bg-white/50 backdrop-blur-md sticky top-0">
-        <div className="flex items-center gap-3">
-             {/* Removed back button as this is home */}
-            <h3 className="font-display font-semibold text-gray-900 text-lg tracking-tight">Wow Agent</h3>
-        </div>
+      <main className="flex-1 flex flex-col p-6 z-10 overflow-y-auto no-scrollbar">
         
-        <Link href="/presentation">
-          <button className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm border border-black/5 hover:bg-gray-50 transition-all active:scale-95 group">
-             <Sparkles size={16} className="text-gray-400 group-hover:text-amber-500 transition-colors" />
-             <span className="text-xs font-bold text-gray-600 uppercase tracking-wide">Как это работает</span>
-          </button>
-        </Link>
-      </header>
-
-      {/* Chat Area */}
-      <div 
-        ref={scrollRef}
-        className="flex-1 overflow-y-auto p-4 space-y-6 no-scrollbar pb-24"
-      >
-        <div className="flex justify-center mb-8 mt-4">
-             <div className="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-bold uppercase rounded-full tracking-wider border border-green-200 shadow-sm">
-                Online • 24/7
-            </div>
+        {/* First Block: Hero Section (Restored style) */}
+        <div className="text-center mt-8 mb-8 space-y-6">
+           <h1 className="text-4xl font-display font-medium text-gray-900 leading-tight">
+             Ваш новый лучший <br/>
+             <span className="font-bold">сотрудник.</span>
+           </h1>
+           
+           <div className="space-y-4">
+             <p className="text-gray-500 text-lg leading-relaxed font-light">
+               Я встречаю клиентов, провожу презентации и закрываю сделки.
+             </p>
+             <p className="text-gray-900 font-medium text-lg">
+               Работаю 24/7. Без выгорания.
+             </p>
+           </div>
         </div>
 
-        <AnimatePresence>
-          {messages.map((msg) => (
-            <motion.div
-              key={msg.id}
-              initial={{ opacity: 0, y: 10, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div 
-                className={`
-                  max-w-[85%] px-5 py-3.5 rounded-2xl text-[15px] leading-relaxed shadow-sm
-                  ${msg.role === 'user' 
-                    ? 'bg-black text-white rounded-br-none shadow-md' 
-                    : 'bg-white text-gray-800 rounded-bl-none shadow-sm border border-black/5'}
-                `}
-              >
-                {msg.role === 'agent' ? (
-                  <TypingEffect text={msg.content} speed={15} />
-                ) : (
-                  msg.content
-                )}
-              </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
-        
-        {isAgentTyping && (
-          <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }}
-            className="flex justify-start"
-          >
-            <div className="bg-white px-4 py-3 rounded-2xl rounded-bl-none flex gap-1 items-center shadow-sm border border-black/5">
-              <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-              <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-              <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></span>
+        {/* Action Area */}
+        <div className="flex flex-col gap-4 mt-2">
+            {/* Start Live Dialog "Header" + Chat Interface */}
+            <div className="flex items-center gap-3 px-4 mb-2 opacity-80">
+                <MessageSquare size={18} className="text-gray-800" />
+                <span className="text-sm font-semibold text-gray-800 uppercase tracking-wide">Начать живой диалог</span>
             </div>
-          </motion.div>
-        )}
-      </div>
 
-      {/* Input Area (Copilot Style) */}
-      <div className="p-4 pt-2 shrink-0 z-20 w-full absolute bottom-4 left-0">
-        <form 
-          onSubmit={(e) => { e.preventDefault(); handleSend(); }}
-          className="mx-4 relative flex items-center shadow-xl shadow-black/5 rounded-[2rem] bg-white border border-black/5 transition-all focus-within:shadow-2xl focus-within:scale-[1.01]"
-        >
-          <button 
-            type="button"
-            className="p-4 text-gray-400 hover:text-gray-600 transition-colors"
-          >
-             <Mic size={22} />
-          </button>
-          
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Сообщение для Wow Agent..."
-            className="flex-1 bg-transparent border-none py-4 text-gray-900 text-[16px] placeholder:text-gray-400 focus:outline-none focus:ring-0"
-          />
-          
-          <button 
-            type="submit"
-            disabled={!inputValue.trim()}
-            className="p-2 mr-2 bg-black rounded-full text-white hover:bg-black/80 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            <Send size={18} />
-          </button>
-        </form>
-      </div>
+            {/* Inline Chat Container */}
+            <div className="bg-white/60 border border-black/5 rounded-3xl p-4 shadow-sm min-h-[300px] flex flex-col">
+                 <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto max-h-[300px] no-scrollbar mb-4 pr-2">
+                    <AnimatePresence>
+                      {messages.map((msg) => (
+                        <motion.div
+                          key={msg.id}
+                          initial={{ opacity: 0, y: 5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                        >
+                          <div 
+                            className={`
+                              max-w-[90%] px-4 py-3 rounded-2xl text-[14px] leading-relaxed
+                              ${msg.role === 'user' 
+                                ? 'bg-black text-white rounded-br-none' 
+                                : 'bg-white text-gray-800 rounded-bl-none shadow-sm border border-black/5'}
+                            `}
+                          >
+                            {msg.role === 'agent' ? (
+                              <TypingEffect text={msg.content} speed={10} />
+                            ) : (
+                              msg.content
+                            )}
+                          </div>
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+                    {isAgentTyping && (
+                      <div className="flex justify-start">
+                        <div className="bg-white px-3 py-2 rounded-2xl rounded-bl-none border border-black/5 flex gap-1 items-center">
+                          <span className="w-1 h-1 bg-gray-400 rounded-full animate-bounce"></span>
+                          <span className="w-1 h-1 bg-gray-400 rounded-full animate-bounce delay-75"></span>
+                          <span className="w-1 h-1 bg-gray-400 rounded-full animate-bounce delay-150"></span>
+                        </div>
+                      </div>
+                    )}
+                 </div>
+
+                 {/* Inline Input */}
+                 <form 
+                    onSubmit={(e) => { e.preventDefault(); handleSend(); }}
+                    className="relative flex items-center bg-white border border-black/10 rounded-2xl transition-all focus-within:shadow-md focus-within:border-black/20"
+                  >
+                    <input
+                      type="text"
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
+                      placeholder="Напишите сообщение..."
+                      className="flex-1 bg-transparent border-none py-3 px-4 text-gray-900 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-0"
+                    />
+                    <button 
+                      type="submit"
+                      disabled={!inputValue.trim()}
+                      className="p-2 mr-1 bg-black rounded-xl text-white hover:bg-black/80 transition-all disabled:opacity-30"
+                    >
+                      <Send size={16} />
+                    </button>
+                  </form>
+            </div>
+
+            {/* How It Works Button */}
+            <Link href="/presentation">
+              <button className="w-full bg-white p-4 rounded-2xl flex items-center justify-between hover:bg-gray-50 transition-all active:scale-[0.98] border border-black/5 shadow-sm group mt-2">
+                <div className="flex items-center gap-4">
+                  <div className="p-2 rounded-full bg-black/5 group-hover:bg-black/10 transition-colors">
+                    <Sparkles size={20} className="text-gray-800" />
+                  </div>
+                  <span className="font-medium text-gray-900">Как это работает</span>
+                </div>
+                <ChevronRight className="text-black/20 group-hover:text-black/60 transition-colors" size={18} />
+              </button>
+            </Link>
+
+             {/* Footer Info */}
+             <div className="mt-4 text-center">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-100 text-green-700 text-[10px] font-bold uppercase rounded-full tracking-wider border border-green-200">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"/> Online • 24/7
+                </span>
+             </div>
+        </div>
+      </main>
     </MobileContainer>
   );
 }
