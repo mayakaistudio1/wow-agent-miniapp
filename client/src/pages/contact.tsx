@@ -5,13 +5,15 @@ import { Link } from "wouter";
 import { ArrowLeft, Check, Sparkles } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import type { InsertLead } from "@shared/schema";
+import { useLanguage } from "@/lib/language-context";
 
 export default function ContactPage() {
+  const { t } = useLanguage();
   const [formState, setFormState] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [formData, setFormData] = useState({
     name: "",
     contact: "",
-    businessGoal: "Увеличить продажи"
+    businessGoal: ""
   });
 
   const submitLead = useMutation({
@@ -45,7 +47,7 @@ export default function ContactPage() {
     submitLead.mutate({
       name: formData.name,
       contact: formData.contact,
-      businessGoal: formData.businessGoal,
+      businessGoal: formData.businessGoal || t.contact.goals[0],
     });
   };
 
@@ -61,8 +63,8 @@ export default function ContactPage() {
 
       <div className="flex-1 p-6 flex flex-col z-10 overflow-y-auto no-scrollbar">
         <div className="text-center mb-10 mt-4">
-          <h1 className="text-3xl font-display font-bold text-gray-900 mb-3">Готовы к запуску?</h1>
-          <p className="text-gray-500 text-base">Создайте своего цифрового сотрудника за 72 часа.</p>
+          <h1 className="text-3xl font-display font-bold text-gray-900 mb-3">{t.contact.title}</h1>
+          <p className="text-gray-500 text-base">{t.contact.subtitle}</p>
         </div>
 
         {formState === 'success' ? (
@@ -74,50 +76,49 @@ export default function ContactPage() {
              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-6">
                <Check size={32} />
              </div>
-             <h3 className="text-xl font-bold text-gray-900 mb-3">Заявка отправлена!</h3>
-             <p className="text-gray-500 text-sm mb-8">Наша команда свяжется с вами в ближайшее время для брифинга.</p>
+             <h3 className="text-xl font-bold text-gray-900 mb-3">{t.contact.successTitle}</h3>
+             <p className="text-gray-500 text-sm mb-8">{t.contact.successMessage}</p>
              <Link href="/">
-               <button className="text-black font-semibold text-sm hover:underline">Вернуться к агенту</button>
+               <button className="text-black font-semibold text-sm hover:underline">{t.contact.backToAgent}</button>
              </Link>
            </motion.div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">Имя</label>
+              <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">{t.contact.nameLabel}</label>
               <input 
                 required
                 type="text" 
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Иван Иванов"
+                placeholder={t.contact.namePlaceholder}
                 className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-4 text-gray-900 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all placeholder:text-gray-300"
               />
             </div>
             
             <div className="space-y-2">
-              <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">Telegram / Контакт</label>
+              <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">{t.contact.contactLabel}</label>
               <input 
                 required
                 type="text"
                 value={formData.contact}
                 onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
-                placeholder="@username"
+                placeholder={t.contact.contactPlaceholder}
                 className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-4 text-gray-900 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all placeholder:text-gray-300"
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">Бизнес-цель</label>
+              <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">{t.contact.goalLabel}</label>
               <div className="relative">
                 <select 
                   value={formData.businessGoal}
                   onChange={(e) => setFormData({ ...formData, businessGoal: e.target.value })}
                   className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-4 text-gray-900 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all appearance-none"
                 >
-                    <option>Увеличить продажи</option>
-                    <option>Автоматизировать поддержку</option>
-                    <option>Вебинары и дожим</option>
-                    <option>Другое</option>
+                  {t.contact.goals.map((goal, index) => (
+                    <option key={index} value={goal}>{goal}</option>
+                  ))}
                 </select>
                 <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
                     <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -129,7 +130,7 @@ export default function ContactPage() {
 
             {formState === 'error' && (
               <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-800 text-center">
-                Ошибка отправки. Попробуйте снова.
+                {t.contact.error}
               </div>
             )}
 
@@ -139,16 +140,16 @@ export default function ContactPage() {
               className="w-full bg-black text-white font-bold py-5 rounded-2xl mt-6 shadow-xl shadow-black/10 hover:scale-[1.02] transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-lg"
             >
               {formState === 'submitting' ? (
-                "Отправка..."
+                t.contact.submitting
               ) : (
                 <>
-                  <Sparkles size={20} /> Получить Wow Agent
+                  <Sparkles size={20} /> {t.contact.submit}
                 </>
               )}
             </button>
 
             <p className="text-[11px] text-center text-gray-400 mt-4 px-8 leading-tight">
-              Нажимая кнопку, вы соглашаетесь трансформировать свой бизнес.
+              {t.contact.disclaimer}
             </p>
           </form>
         )}

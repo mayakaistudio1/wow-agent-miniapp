@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import { MobileContainer } from "@/components/layout/mobile-container";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, ArrowLeft, Bot, User, Mic } from "lucide-react";
+import { Send, ArrowLeft, Mic } from "lucide-react";
 import { Link } from "wouter";
 import { TypingEffect } from "@/components/ui/typing-effect";
-import AvatarImage from "@/assets/agent-avatar.png";
+import { useLanguage } from "@/lib/language-context";
 
 type Message = {
   id: string;
@@ -13,24 +13,23 @@ type Message = {
   isTyping?: boolean;
 };
 
-const INITIAL_MESSAGES: Message[] = [
-  { 
-    id: '1', 
-    role: 'agent', 
-    content: "Здравствуйте! Я — демо-версия Wow Agent. Я могу полностью заменить вашу первую линию продаж." 
-  },
-  {
-    id: '2',
-    role: 'agent',
-    content: "Какая сейчас главная проблема в вашем отделе продаж?"
-  }
-];
-
 export default function ChatPage() {
-  const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
+  const { t } = useLanguage();
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isAgentTyping, setIsAgentTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const initialized = useRef(false);
+
+  useEffect(() => {
+    if (!initialized.current) {
+      initialized.current = true;
+      setMessages([
+        { id: '1', role: 'agent', content: t.chat.initialMessages[0] },
+        { id: '2', role: 'agent', content: t.chat.initialMessages[1] },
+      ]);
+    }
+  }, [t]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -51,7 +50,6 @@ export default function ChatPage() {
     setInputValue("");
     setIsAgentTyping(true);
 
-    // Simulate Agent Response Logic
     setTimeout(() => {
       const responseContent = getAgentResponse(messages.length);
       const agentMsg: Message = {
@@ -65,15 +63,13 @@ export default function ChatPage() {
   };
 
   const getAgentResponse = (count: number) => {
-    // Simple mock logic for demo purposes
-    if (count < 3) return "Понимаю. Именно здесь я и помогаю. Я мгновенно реагирую на каждый лид, чтобы вы не теряли клиентов из-за «тишины».";
-    if (count < 5) return "В отличие от кнопочного чат-бота, я поддерживаю живой диалог. Я понимаю контекст, отрабатываю возражения и веду к продаже.";
-    return "Хотите посмотреть, как мы можем запустить это для вашего бизнеса всего за 72 часа?";
+    if (count < 3) return t.chat.responses[0];
+    if (count < 5) return t.chat.responses[1];
+    return t.chat.responses[2];
   };
 
   return (
     <MobileContainer className="flex flex-col h-screen bg-[#FDFCFB]">
-      {/* Header */}
       <header className="p-4 flex items-center justify-between z-20 shrink-0 bg-white/50 backdrop-blur-md sticky top-0">
         <div className="flex items-center gap-3">
             <Link href="/">
@@ -81,16 +77,15 @@ export default function ChatPage() {
                 <ArrowLeft size={22} />
             </button>
             </Link>
-            <h3 className="font-display font-semibold text-gray-900 text-lg">Wow Agent</h3>
+            <h3 className="font-display font-semibold text-gray-900 text-lg">{t.chat.title}</h3>
         </div>
         <div className="flex gap-2">
             <div className="px-2 py-1 bg-green-100 text-green-700 text-[10px] font-bold uppercase rounded-full tracking-wider border border-green-200">
-                Online
+                {t.chat.online}
             </div>
         </div>
       </header>
 
-      {/* Chat Area */}
       <div 
         ref={scrollRef}
         className="flex-1 overflow-y-auto p-4 space-y-6 no-scrollbar"
@@ -136,7 +131,6 @@ export default function ChatPage() {
         )}
       </div>
 
-      {/* Input Area (Copilot Style) */}
       <div className="p-4 pt-2 shrink-0 z-20">
         <form 
           onSubmit={(e) => { e.preventDefault(); handleSend(); }}
@@ -153,7 +147,7 @@ export default function ChatPage() {
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Сообщение для Wow Agent..."
+            placeholder={t.chat.placeholder}
             className="flex-1 bg-transparent border-none py-4 text-gray-900 text-[16px] placeholder:text-gray-400 focus:outline-none focus:ring-0"
           />
           

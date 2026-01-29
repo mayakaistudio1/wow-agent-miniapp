@@ -4,14 +4,15 @@ import { LiveAvatarChat } from "@/components/LiveAvatarChat";
 import { Link } from "wouter";
 import { ArrowLeft, Video, Phone } from "lucide-react";
 import { motion } from "framer-motion";
+import { useLanguage } from "@/lib/language-context";
 
 export default function VideoChatPage() {
   const [isAvatarOpen, setIsAvatarOpen] = useState(false);
+  const { t, language } = useLanguage();
 
   return (
     <>
       <MobileContainer className="flex flex-col h-screen">
-        {/* Header */}
         <header className="p-4 flex items-center justify-between z-20 shrink-0 bg-white/50 backdrop-blur-md sticky top-0">
           <div className="flex items-center gap-3">
             <Link href="/">
@@ -19,11 +20,10 @@ export default function VideoChatPage() {
                 <ArrowLeft size={22} />
               </button>
             </Link>
-            <h3 className="font-display font-semibold text-gray-900 text-lg">Видео-звонок</h3>
+            <h3 className="font-display font-semibold text-gray-900 text-lg">{t.videoChat.title}</h3>
           </div>
         </header>
 
-        {/* Content */}
         <div className="flex-1 flex flex-col items-center justify-center p-6">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -35,10 +35,10 @@ export default function VideoChatPage() {
             </div>
             
             <h1 className="text-2xl font-display font-bold text-gray-900 mb-3">
-              Живой разговор с AI
+              {t.videoChat.heading}
             </h1>
             <p className="text-gray-500 text-sm mb-8 max-w-xs mx-auto leading-relaxed">
-              Начните видео-звонок с цифровым сотрудником. Он ответит на ваши вопросы голосом и покажет, как работает Wow Agent.
+              {t.videoChat.description}
             </p>
 
             <button
@@ -47,30 +47,29 @@ export default function VideoChatPage() {
               data-testid="button-start-video-call"
             >
               <Phone className="w-5 h-5" />
-              Начать звонок
+              {t.videoChat.startCall}
             </button>
 
             <p className="text-[11px] text-gray-400 mt-6 px-8">
-              Для работы требуется разрешение на микрофон
+              {t.videoChat.micRequired}
             </p>
           </motion.div>
         </div>
       </MobileContainer>
 
-      {/* LiveAvatar Modal */}
       <LiveAvatarChat
         isOpen={isAvatarOpen}
         onClose={() => setIsAvatarOpen(false)}
-        language="ru"
+        language={language}
         config={{
           avatarName: "Wow Agent",
           avatarInitials: "WA",
           avatarGradient: "from-black to-gray-800",
-          startButtonText: "Начать звонок",
-          connectingText: "Подключение...",
-          waitingText: "Ожидание аватара...",
-          endedTitle: "Звонок завершён",
-          endedDescription: "Спасибо за диалог! Хотите узнать больше?",
+          startButtonText: t.videoChat.startCall,
+          connectingText: t.videoChat.connecting,
+          waitingText: t.videoChat.waiting,
+          endedTitle: t.videoChat.endedTitle,
+          endedDescription: t.videoChat.endedDescription,
         }}
       />
     </>

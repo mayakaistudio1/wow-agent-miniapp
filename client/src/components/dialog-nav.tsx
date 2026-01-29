@@ -1,26 +1,22 @@
-import { useState } from "react";
-import { Link, useLocation } from "wouter";
-import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "wouter";
+import { motion } from "framer-motion";
 import { 
   MessageSquare, 
   Sparkles, 
-  Rocket, 
-  Zap, 
-  User, 
   ChevronRight,
   Video 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const NAV_ITEMS = [
-  { id: 'video-chat', label: 'Видео-звонок с агентом', icon: Video, path: '/video-chat', color: 'text-gray-800' },
-  { id: 'chat', label: 'Текстовый диалог', icon: MessageSquare, path: '/chat', color: 'text-gray-800' },
-  { id: 'presentation', label: 'Как это работает', icon: Sparkles, path: '/presentation', color: 'text-gray-800' },
-];
+import { useLanguage } from "@/lib/language-context";
 
 export function DialogNav() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [location] = useLocation();
+  const { t } = useLanguage();
+
+  const NAV_ITEMS = [
+    { id: 'video-chat', label: t.nav.videoChat, icon: Video, path: '/video-chat', color: 'text-gray-800' },
+    { id: 'chat', label: t.nav.textChat, icon: MessageSquare, path: '/chat', color: 'text-gray-800' },
+    { id: 'presentation', label: t.nav.howItWorks, icon: Sparkles, path: '/presentation', color: 'text-gray-800' },
+  ];
 
   return (
     <div className="w-full flex flex-col gap-3 mt-6">
