@@ -1,6 +1,5 @@
 {
   "buildCommand": "npm run build",
-  "framework": "other",
   "outputDirectory": "./dist",
   "installCommand": "npm ci",
   "env": {
