@@ -41,6 +41,20 @@ Preferred communication style: Simple, everyday language.
 2. **Text Chat**: Demo text conversation with simulated AI responses
 3. **Presentation Slides**: Interactive slide-based presentation explaining the service
 4. **Lead Capture**: Contact form that stores submissions to the database
+5. **Multilingual Support**: Full localization in 4 languages (Russian, English, German, Spanish)
+
+### Multilingual System
+
+- **Language Selection**: Welcome screen displays tagline in all 4 languages simultaneously with flag-based language picker
+- **Translations File**: `client/src/lib/translations.ts` contains all UI strings for all languages
+- **Language Context**: `client/src/lib/language-context.tsx` provides React context with localStorage persistence
+- **Supported Languages**: 
+  - `ru` - Russian (Русский) 🇷🇺
+  - `en` - English 🇬🇧
+  - `de` - German (Deutsch) 🇩🇪
+  - `es` - Spanish (Español) 🇪🇸
+- **Storage Key**: `wow-agent-language` in localStorage
+- **User Flow**: First visit shows language selection → choice persisted → subsequent visits go directly to home
 
 ### HeyGen LiveAvatar Integration
 
