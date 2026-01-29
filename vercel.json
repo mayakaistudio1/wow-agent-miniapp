@@ -1,5 +1,10 @@
 {
   "buildCommand": "npm run build",
   "framework": "other",
-  "nodeVersion": "20.x"
+  "nodeVersion": "20.x",
+  "outputDirectory": "./dist",
+  "installCommand": "npm ci",
+  "env": {
+    "NODE_ENV": "production"
+  }
 }
