@@ -39,6 +39,12 @@ export const translations = {
         'Здравствуйте! Я — демо-версия Wow Agent. Я могу полностью заменить вашу первую линию продаж.',
         'Какая сейчас главная проблема в вашем отделе продаж?',
       ],
+      suggestedReplies: [
+        'Что ты умеешь?',
+        'Чем ты лучше чат-бота?',
+        'Сколько это стоит?',
+        'Как быстро запустить?',
+      ],
       responses: [
         'Понимаю. Именно здесь я и помогаю. Я мгновенно реагирую на каждый лид, чтобы вы не теряли клиентов из-за «тишины».',
         'В отличие от кнопочного чат-бота, я поддерживаю живой диалог. Я понимаю контекст, отрабатываю возражения и веду к продаже.',
@@ -154,6 +160,12 @@ export const translations = {
       initialMessages: [
         "Hello! I'm a demo version of Wow Agent. I can completely replace your first line of sales.",
         "What's the main problem in your sales department right now?",
+      ],
+      suggestedReplies: [
+        'What can you do?',
+        'How are you better than a chatbot?',
+        'How much does it cost?',
+        'How fast can you launch?',
       ],
       responses: [
         "I understand. This is exactly where I help. I respond instantly to every lead so you don't lose customers due to 'silence'.",
@@ -271,6 +283,12 @@ export const translations = {
         'Hallo! Ich bin eine Demo-Version von Wow Agent. Ich kann Ihre erste Verkaufslinie komplett ersetzen.',
         'Was ist derzeit das Hauptproblem in Ihrer Verkaufsabteilung?',
       ],
+      suggestedReplies: [
+        'Was kannst du?',
+        'Wie bist du besser als ein Chatbot?',
+        'Wie viel kostet es?',
+        'Wie schnell kann man starten?',
+      ],
       responses: [
         'Verstehe. Genau hier helfe ich. Ich reagiere sofort auf jeden Lead, damit Sie keine Kunden durch "Stille" verlieren.',
         'Anders als ein Button-Chatbot führe ich einen lebendigen Dialog. Ich verstehe den Kontext, bearbeite Einwände und führe zum Verkauf.',
@@ -386,6 +404,12 @@ export const translations = {
       initialMessages: [
         '¡Hola! Soy una versión demo de Wow Agent. Puedo reemplazar completamente tu primera línea de ventas.',
         '¿Cuál es el problema principal en tu departamento de ventas ahora mismo?',
+      ],
+      suggestedReplies: [
+        '¿Qué puedes hacer?',
+        '¿Por qué eres mejor que un chatbot?',
+        '¿Cuánto cuesta?',
+        '¿Qué tan rápido puedes lanzar?',
       ],
       responses: [
         'Entiendo. Aquí es exactamente donde ayudo. Respondo instantáneamente a cada lead para que no pierdas clientes por el "silencio".',
@@ -512,6 +536,7 @@ export interface Translations {
     online: string;
     placeholder: string;
     initialMessages: readonly string[];
+    suggestedReplies: readonly string[];
     responses: readonly string[];
   };
   contact: {

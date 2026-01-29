@@ -17,6 +17,7 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isAgentTyping, setIsAgentTyping] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
   const initialized = useRef(false);
 
@@ -36,10 +37,10 @@ export default function ChatPage() {
     }
   }, [messages, isAgentTyping]);
 
-  const handleSend = async () => {
-    if (!inputValue.trim() || isAgentTyping) return;
+  const sendMessage = async (text: string) => {
+    if (!text.trim() || isAgentTyping) return;
 
-    const userMessage = inputValue.trim();
+    const userMessage = text.trim();
     const userMsg: Message = {
       id: Date.now().toString(),
       role: 'user',
@@ -48,6 +49,7 @@ export default function ChatPage() {
 
     setMessages(prev => [...prev, userMsg]);
     setInputValue("");
+    setShowSuggestions(false);
     setIsAgentTyping(true);
 
     try {
@@ -90,6 +92,9 @@ export default function ChatPage() {
       setIsAgentTyping(false);
     }
   };
+
+  const handleSend = () => sendMessage(inputValue);
+  const handleSuggestionClick = (suggestion: string) => sendMessage(suggestion);
 
   return (
     <MobileContainer className="flex flex-col h-screen bg-[#FDFCFB]">
@@ -150,6 +155,24 @@ export default function ChatPage() {
               <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
               <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></span>
             </div>
+          </motion.div>
+        )}
+
+        {showSuggestions && !isAgentTyping && t.chat.suggestedReplies && (
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-wrap gap-2 mt-2"
+          >
+            {t.chat.suggestedReplies.map((suggestion: string, index: number) => (
+              <button
+                key={index}
+                onClick={() => handleSuggestionClick(suggestion)}
+                className="px-4 py-2.5 bg-white border border-black/10 rounded-full text-sm text-gray-700 hover:bg-gray-50 hover:border-black/20 transition-all shadow-sm"
+              >
+                {suggestion}
+              </button>
+            ))}
           </motion.div>
         )}
       </div>
