@@ -71,11 +71,36 @@ function WelcomeScreen() {
   );
 }
 
+function LanguageSwitcher() {
+  const { language, setLanguage } = useLanguage();
+
+  return (
+    <div className="absolute top-4 right-4 z-30 flex gap-1">
+      {LANGUAGES.map((lang) => (
+        <button
+          key={lang.code}
+          onClick={() => setLanguage(lang.code)}
+          className={`w-9 h-9 rounded-full flex items-center justify-center text-lg transition-all ${
+            language === lang.code 
+              ? 'bg-white shadow-md scale-110 ring-2 ring-black/10' 
+              : 'bg-white/50 hover:bg-white/80 hover:scale-105'
+          }`}
+          data-testid={`button-switch-language-${lang.code}`}
+          title={lang.name}
+        >
+          {lang.flag}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function MainHome() {
   const { t } = useLanguage();
 
   return (
     <MobileContainer className="relative flex flex-col">
+      <LanguageSwitcher />
       <main className="flex-1 flex flex-col p-6 z-10 overflow-y-auto no-scrollbar justify-center">
         <div className="space-y-6 text-center mb-12 mt-20">
           <motion.div
