@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { insertLeadSchema } from "@shared/schema";
 import { z } from "zod";
 import { registerLiveAvatarRoutes } from "./liveavatar-routes";
+import { registerChatRoutes } from "./chat-routes";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -11,6 +12,9 @@ export async function registerRoutes(
 ): Promise<Server> {
   // Register LiveAvatar routes for video chat
   registerLiveAvatarRoutes(app);
+  
+  // Register AI chat routes
+  registerChatRoutes(app);
   // Lead submission endpoint
   app.post("/api/leads", async (req, res) => {
     try {

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { MobileContainer } from "@/components/layout/mobile-container";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, ArrowLeft, Mic } from "lucide-react";
+import { Send, ArrowLeft, Loader2 } from "lucide-react";
 import { Link } from "wouter";
 import { TypingEffect } from "@/components/ui/typing-effect";
 import { useLanguage } from "@/lib/language-context";
@@ -10,11 +10,10 @@ type Message = {
   id: string;
   role: 'agent' | 'user';
   content: string;
-  isTyping?: boolean;
 };
 
 export default function ChatPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isAgentTyping, setIsAgentTyping] = useState(false);
@@ -37,35 +36,59 @@ export default function ChatPage() {
     }
   }, [messages, isAgentTyping]);
 
-  const handleSend = () => {
-    if (!inputValue.trim()) return;
+  const handleSend = async () => {
+    if (!inputValue.trim() || isAgentTyping) return;
 
+    const userMessage = inputValue.trim();
     const userMsg: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: inputValue
+      content: userMessage
     };
 
     setMessages(prev => [...prev, userMsg]);
     setInputValue("");
     setIsAgentTyping(true);
 
-    setTimeout(() => {
-      const responseContent = getAgentResponse(messages.length);
+    try {
+      const history = messages.map(m => ({
+        role: m.role === 'agent' ? 'assistant' : 'user',
+        content: m.content
+      }));
+
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: userMessage,
+          language,
+          history
+        })
+      });
+
+      if (!response.ok) throw new Error('Failed to get response');
+
+      const data = await response.json();
+      
       const agentMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: 'agent',
-        content: responseContent
+        content: data.reply
       };
       setMessages(prev => [...prev, agentMsg]);
+    } catch (error) {
+      console.error('Chat error:', error);
+      const errorMsg: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'agent',
+        content: language === 'ru' 
+          ? 'Извините, произошла ошибка. Попробуйте ещё раз.'
+          : 'Sorry, an error occurred. Please try again.'
+      };
+      setMessages(prev => [...prev, errorMsg]);
+    } finally {
       setIsAgentTyping(false);
-    }, 1500);
-  };
-
-  const getAgentResponse = (count: number) => {
-    if (count < 3) return t.chat.responses[0];
-    if (count < 5) return t.chat.responses[1];
-    return t.chat.responses[2];
+    }
   };
 
   return (
@@ -136,27 +159,25 @@ export default function ChatPage() {
           onSubmit={(e) => { e.preventDefault(); handleSend(); }}
           className="relative flex items-center shadow-xl shadow-black/5 rounded-[2rem] bg-white border border-black/5 transition-all focus-within:shadow-2xl focus-within:scale-[1.01]"
         >
-          <button 
-            type="button"
-            className="p-4 text-gray-400 hover:text-gray-600 transition-colors"
-          >
-             <Mic size={22} />
-          </button>
-          
           <input
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder={t.chat.placeholder}
-            className="flex-1 bg-transparent border-none py-4 text-gray-900 text-[16px] placeholder:text-gray-400 focus:outline-none focus:ring-0"
+            disabled={isAgentTyping}
+            className="flex-1 bg-transparent border-none py-4 px-5 text-gray-900 text-[16px] placeholder:text-gray-400 focus:outline-none focus:ring-0 disabled:opacity-50"
           />
           
           <button 
             type="submit"
-            disabled={!inputValue.trim()}
+            disabled={!inputValue.trim() || isAgentTyping}
             className="p-2 mr-2 bg-black rounded-full text-white hover:bg-black/80 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
           >
-            <Send size={18} />
+            {isAgentTyping ? (
+              <Loader2 size={18} className="animate-spin" />
+            ) : (
+              <Send size={18} />
+            )}
           </button>
         </form>
       </div>
